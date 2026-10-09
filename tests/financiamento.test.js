@@ -32,7 +32,7 @@ test('PMT de referência: R$ 100.000 a 1% a.m. em 12 meses dá R$ 8.884,88', () 
   for (const row of price.rows.slice(0, -1)) assert.equal(row.payment, 888_488);
 });
 
-test('Price: juros sobre o saldo e amortização = PMT − juros', () => {
+test('Price: juros sobre o saldo e amortização = PMT - juros', () => {
   const price = priceSchedule(10_000_000, 0.01, 12);
   const [first, second] = price.rows;
   assert.equal(first.interest, 100_000);

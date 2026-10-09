@@ -1,4 +1,4 @@
-# Simulador SAC × Price — compare financiamentos parcela a parcela (HTML + JS)
+# Simulador SAC × Price: compare financiamentos parcela a parcela (HTML + JS)
 
 Na hora de financiar um imóvel ou um carro, a dúvida é sempre a mesma: SAC ou Price? Este simulador mostra, lado a lado, quanto você paga em cada sistema (primeira e última parcela, total pago e total de juros), com gráfico, tabelas completas e exportação para o Excel.
 
@@ -51,8 +51,8 @@ Usa o `node:test` nativo, sem nenhuma dependência.
 
 ## Como funciona
 - **SAC** (Sistema de Amortização Constante): amortização = PV ÷ n; juros = saldo devedor × i; parcela = amortização + juros.
-- **Price** (Sistema Francês): PMT = PV × i ÷ (1 − (1 + i)^−n); juros = saldo devedor × i; amortização = PMT − juros. Com juros zero, PMT = PV ÷ n.
-- **Taxa anual para mensal:** (1 + a)^(1/12) − 1, que é a taxa equivalente (12% ao ano = 0,9489% ao mês, e não 1%).
+- **Price** (Sistema Francês): PMT = PV × i ÷ (1 - (1 + i)^-n); juros = saldo devedor × i; amortização = PMT - juros. Com juros zero, PMT = PV ÷ n.
+- **Taxa anual para mensal:** (1 + a)^(1/12) - 1, que é a taxa equivalente (12% ao ano = 0,9489% ao mês, e não 1%).
 - **Centavos:** os cálculos usam centavos inteiros. Juros e amortização são arredondados mês a mês e a última parcela é ajustada para o saldo terminar exatamente em zero; a página mostra de quanto foi esse ajuste.
 - A lógica fica em `src/financiamento.js` (sem DOM) e é coberta pelos testes em `tests/`.
 
@@ -63,4 +63,4 @@ Esta é uma simulação para comparar cenários, não uma proposta de crédito n
 Issues e pull requests são bem-vindos.
 
 ## Licença
-MIT — veja [LICENSE](LICENSE).
+MIT. Veja [LICENSE](LICENSE).

@@ -83,17 +83,17 @@ export function parseMoneyCents(text) {
   return parts.sign * (Number(parts.int) * 100 + Number(parts.frac.padEnd(2, '0')));
 }
 
-/** Taxa anual → mensal equivalente: (1 + a)^(1/12) − 1. Taxas em fração (0,12 = 12%). */
+/** Taxa anual → mensal equivalente: (1 + a)^(1/12) - 1. Taxas em fração (0,12 = 12%). */
 export function annualToMonthly(annualRate) {
   return Math.expm1(Math.log1p(annualRate) / 12);
 }
 
-/** Taxa mensal → anual equivalente: (1 + i)^12 − 1. */
+/** Taxa mensal → anual equivalente: (1 + i)^12 - 1. */
 export function monthlyToAnnual(monthlyRate) {
   return Math.expm1(12 * Math.log1p(monthlyRate));
 }
 
-/** Parcela da Tabela Price sem arredondar: PV × i / (1 − (1 + i)^−n). */
+/** Parcela da Tabela Price sem arredondar: PV × i / (1 - (1 + i)^-n). */
 export function pricePayment(principal, monthlyRate, months) {
   if (monthlyRate === 0) return principal / months;
   return (principal * monthlyRate) / -Math.expm1(-months * Math.log1p(monthlyRate));
@@ -131,7 +131,7 @@ export function sacSchedule(principal, monthlyRate, months, extra = 0) {
   };
 }
 
-/** Price: parcela fixa (PMT), juros sobre o saldo e amortização = PMT − juros. A última parcela zera o saldo. */
+/** Price: parcela fixa (PMT), juros sobre o saldo e amortização = PMT - juros. A última parcela zera o saldo. */
 export function priceSchedule(principal, monthlyRate, months, extra = 0) {
   const installment = roundHalfUp(pricePayment(principal, monthlyRate, months));
   const rows = [];
