@@ -1,0 +1,11 @@
+{
+  "name": "simulador-sac-price",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Simulador de financiamento que compara SAC e Tabela Price parcela a parcela, com gráfico, tabelas e exportação em CSV.",
+  "type": "module",
+  "scripts": { "test": "node --test" },
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/micdog22/simulador-sac-price.git" },
+  "homepage": "https://micdog22.github.io/simulador-sac-price/"
+}

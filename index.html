@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulador SAC × Price — compare financiamentos parcela a parcela</title>
+  <meta name="description" content="Compare SAC e Tabela Price parcela a parcela: total de juros, primeira e última parcela, gráfico, tabelas completas e CSV para Excel. Tudo no navegador.">
+  <meta name="theme-color" content="#0f766e">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./src/app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <h1>Simulador SAC × Price</h1>
+    <p class="lead">Compare financiamentos parcela a parcela e veja quanto cada sistema cobra de juros.</p>
+  </header>
+
+  <main>
+    <form id="sim-form" class="card" novalidate>
+      <h2 class="card-title">Dados do financiamento</h2>
+
+      <fieldset class="segmented">
+        <legend>Como você quer informar o valor?</legend>
+        <div class="segmented-options">
+          <label><input type="radio" name="mode" value="bem" checked> Valor do bem e entrada</label>
+          <label><input type="radio" name="mode" value="financiado"> Valor financiado</label>
+        </div>
+      </fieldset>
+
+      <div class="fields">
+        <div class="field" data-mode="bem">
+          <label for="valorBem">Valor do bem (R$)</label>
+          <input id="valorBem" name="valorBem" inputmode="decimal" autocomplete="off" value="300.000,00" aria-describedby="valorBem-erro">
+          <p class="error" id="valorBem-erro"></p>
+        </div>
+        <div class="field" data-mode="bem">
+          <label for="entrada">Entrada (R$)</label>
+          <input id="entrada" name="entrada" inputmode="decimal" autocomplete="off" value="60.000,00" aria-describedby="entrada-erro entrada-info">
+          <p class="error" id="entrada-erro"></p>
+          <p class="hint" id="entrada-info"></p>
+        </div>
+        <div class="field" data-mode="financiado" hidden>
+          <label for="valorFinanciado">Valor financiado (R$)</label>
+          <input id="valorFinanciado" name="valorFinanciado" inputmode="decimal" autocomplete="off" value="240.000,00" aria-describedby="valorFinanciado-erro">
+          <p class="error" id="valorFinanciado-erro"></p>
+        </div>
+        <div class="field">
+          <label for="juros">Taxa de juros</label>
+          <div class="input-group">
+            <input id="juros" name="juros" inputmode="decimal" autocomplete="off" value="10" aria-describedby="juros-erro juros-info">
+            <select id="unidade" name="unidade" aria-label="Unidade da taxa de juros">
+              <option value="ano" selected>% ao ano</option>
+              <option value="mes">% ao mês</option>
+            </select>
+          </div>
+          <p class="error" id="juros-erro"></p>
+          <p class="hint" id="juros-info"></p>
+        </div>
+        <div class="field">
+          <label for="prazo">Prazo (meses)</label>
+          <input id="prazo" name="prazo" inputmode="numeric" autocomplete="off" value="360" aria-describedby="prazo-erro prazo-info">
+          <p class="error" id="prazo-erro"></p>
+          <p class="hint" id="prazo-info"></p>
+        </div>
+        <div class="field">
+          <label for="extra">Seguro e taxas por mês (R$)</label>
+          <input id="extra" name="extra" inputmode="decimal" autocomplete="off" placeholder="0,00" aria-describedby="extra-erro extra-info">
+          <p class="error" id="extra-erro"></p>
+          <p class="hint" id="extra-info">Opcional. Valor fixo somado a todas as parcelas, nos dois sistemas.</p>
+        </div>
+      </div>
+    </form>
+
+    <section id="resultado" aria-labelledby="resultado-titulo">
+      <h2 id="resultado-titulo" class="visually-hidden">Resultado da simulação</h2>
+      <div aria-live="polite">
+        <p id="comparacao" class="highlight"></p>
+        <div class="summary">
+          <article class="card system" aria-labelledby="titulo-sac">
+            <h3 id="titulo-sac"><span class="key key-sac" aria-hidden="true"></span>SAC <span class="muted small">parcelas decrescentes</span></h3>
+            <dl>
+              <div><dt>1ª parcela</dt><dd id="sac-primeira"></dd></div>
+              <div><dt>Última parcela</dt><dd id="sac-ultima"></dd></div>
+              <div><dt>Total pago</dt><dd id="sac-total"></dd></div>
+              <div><dt>Total de juros</dt><dd id="sac-juros"></dd></div>
+            </dl>
+          </article>
+          <article class="card system" aria-labelledby="titulo-price">
+            <h3 id="titulo-price"><span class="key key-price" aria-hidden="true"></span>Price <span class="muted small">parcelas fixas</span></h3>
+            <dl>
+              <div><dt>1ª parcela</dt><dd id="price-primeira"></dd></div>
+              <div><dt>Última parcela</dt><dd id="price-ultima"></dd></div>
+              <div><dt>Total pago</dt><dd id="price-total"></dd></div>
+              <div><dt>Total de juros</dt><dd id="price-juros"></dd></div>
+            </dl>
+          </article>
+        </div>
+        <p id="ajustes" class="muted small"></p>
+      </div>
+
+      <div class="card">
+        <div class="chart-head">
+          <h3>Valor das parcelas mês a mês</h3>
+          <ul class="legend" aria-hidden="true">
+            <li><span class="line-key key-sac"></span>SAC</li>
+            <li><span class="line-key key-price"></span>Price</li>
+          </ul>
+        </div>
+        <div id="grafico" class="chart" tabindex="0" role="group" aria-label="Gráfico das parcelas. Use as setas para percorrer os meses." aria-describedby="grafico-dica"></div>
+        <p id="grafico-dica" class="muted small">Passe o mouse sobre o gráfico ou use as setas do teclado para ver cada mês.</p>
+        <p id="grafico-leitura" class="visually-hidden" aria-live="polite"></p>
+      </div>
+
+      <div class="card">
+        <div class="chart-head">
+          <h3>Tabelas completas</h3>
+          <button type="button" class="btn" id="baixar-csv">Baixar CSV (Excel)</button>
+        </div>
+        <details id="detalhe-sac" class="table-details">
+          <summary>Tabela SAC</summary>
+          <div class="table-wrap" tabindex="0" aria-label="Tabela SAC"></div>
+        </details>
+        <details id="detalhe-price" class="table-details">
+          <summary>Tabela Price</summary>
+          <div class="table-wrap" tabindex="0" aria-label="Tabela Price"></div>
+        </details>
+        <p id="csv-status" class="muted small" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="card notes" aria-labelledby="como-funciona">
+      <h2 id="como-funciona">Como funciona</h2>
+      <ul>
+        <li><strong>SAC:</strong> a amortização é sempre a mesma (valor financiado ÷ prazo) e os juros incidem sobre o saldo devedor. Como o saldo cai rápido, as parcelas começam maiores e diminuem.</li>
+        <li><strong>Price:</strong> a parcela é fixa, calculada por PMT = PV × i ÷ (1 − (1 + i)<sup>−n</sup>). No começo quase tudo é juros; a amortização cresce mês a mês.</li>
+        <li><strong>Taxa anual:</strong> é convertida para a mensal equivalente por (1 + a)<sup>1/12</sup> − 1. Por isso 12% ao ano equivalem a 0,9489% ao mês, e não a 1%.</li>
+        <li><strong>Centavos:</strong> juros e amortização são arredondados mês a mês, e a última parcela é ajustada para o saldo terminar exatamente em zero.</li>
+      </ul>
+      <p class="disclaimer"><strong>Isto é uma simulação.</strong> Contratos reais incluem o CET (Custo Efetivo Total), seguros obrigatórios, tarifas e, muitas vezes, correção do saldo pela TR ou pelo IPCA, então as parcelas de verdade podem ser diferentes. Use o resultado para comparar cenários e confira sempre a proposta da instituição financeira.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Tudo roda no seu navegador: nenhum dado sai do seu computador. Código aberto no <a href="https://github.com/micdog22/simulador-sac-price">GitHub</a> · Licença MIT</p>
+  </footer>
+</body>
+</html>
